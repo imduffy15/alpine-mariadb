@@ -1,0 +1,18 @@
+sudo: required
+env:
+  global:
+    - DOCKER_IMAGE=imduffy15/alpine-mariadb
+services:
+  - docker
+script:
+  - cd alpine-mariadb-amd64 && docker build -t $DOCKER_IMAGE:amd64 .
+  - docker tag $DOCKER_IMAGE:amd64 $DOCKER_IMAGE:latest
+  - docker tag $DOCKER_IMAGE:amd64 $DOCKER_IMAGE:master
+  - docker tag $DOCKER_IMAGE:amd64 $DOCKER_IMAGE:$TRAVIS_BUILD_NUMBER
+after_success:
+  - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
+  - docker push $DOCKER_IMAGE:amd64
+  - docker push $DOCKER_IMAGE:latest
+  - docker push $DOCKER_IMAGE:master
+  - docker push $DOCKER_IMAGE:$TRAVIS_BUILD_NUMBER
+
